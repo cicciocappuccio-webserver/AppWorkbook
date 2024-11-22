@@ -1,0 +1,78 @@
+/* Generale */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* Titoli e Paragrafi */
+h1, h2 {
+    font-size: 1.8em;
+    margin: 20px 0;
+}
+
+p {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+/* Contenitore Generale */
+form {
+    margin: 20px auto;
+    max-width: 90%; /* Ridimensionabile per dispositivi mobili */
+}
+
+/* Centrare i pulsanti radio e il testo */
+form label {
+    display: flex; /* Layout in riga */
+    align-items: center; /* Allinea verticalmente radio e testo */
+    justify-content: center; /* Centra orizzontalmente */
+    margin-bottom: 15px; /* Spazio tra le opzioni */
+}
+
+/* Personalizzazione dei Radio Button */
+input[type="radio"] {
+    margin-right: 10px; /* Spazio tra pallino e testo */
+    transform: scale(1.5); /* Ingrandisce il pulsante */
+    cursor: pointer; /* Cambia il cursore al passaggio del mouse */
+}
+
+/* Pulsanti */
+button {
+    font-size: 1.2em;
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Layout Responsive */
+@media screen and (max-width: 768px) {
+    body {
+        font-size: 1.2em;
+    }
+
+    h1, h2 {
+        font-size: 1.5em;
+    }
+
+    button {
+        font-size: 1.1em;
+        padding: 15px 25px;
+    }
+
+    input[type="radio"] {
+        transform: scale(1.8); /* Più grande sui dispositivi mobili */
+    }
+}

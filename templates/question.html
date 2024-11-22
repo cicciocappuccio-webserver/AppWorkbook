@@ -2,15 +2,19 @@
 <html lang="en">
 <head>
     <title>Question {{ question.id }}</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <h2>Question {{ question.id }}</h2>
     <p>{{ question.question }}</p>
     <form action="/submit" method="post">
         {% for option in question.options %}
-        <input type="radio" name="{{ question.id }}" value="{{ option }}" required>{{ option }}<br>
+        <label>
+            <input type="radio" name="{{ question.id }}" value="{{ option }}" required> {{ option }}
+        </label><br>
         {% endfor %}
         <button type="submit">Next</button>
     </form>
 </body>
 </html>
+
