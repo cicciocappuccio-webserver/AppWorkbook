@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Workbook Quiz</title>
+</head>
+<body>
+    <h1>Welcome to the US Citizenship Workbook</h1>
+    <p>Select a question to begin:</p>
+    <ul>
+        {% for question in questions %}
+        <li><a href="{{ url_for('question', qid=question.id) }}">Question {{ question.id }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
