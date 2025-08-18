@@ -41,24 +41,26 @@ questions = [
 def index():
     """Pagina iniziale del quiz"""
     session.clear()
-    session['current_question'] = 0
+    session['current_question'] = 0  # Zero-based index
     session['score'] = 0
     session['answers'] = []
     return render_template("index.html", questions=questions)
 
-@app.route("/question/<int:qid>")
-def show_question(qid):
+@app.route("/question/<int:question_id>")
+def show_question(question_id):
     """Mostra una specifica domanda del quiz"""
-    if qid < 1 or qid > len(questions):
+    question_index = question_id - 1  # Convert to zero-based
+    
+    if question_index < 0 or question_index >= len(questions):
         return redirect(url_for('index'))
     
-    session['current_question'] = qid - 1
-    question_data = questions[qid - 1]
+    session['current_question'] = question_index
+    question_data = questions[question_index]
     
     return render_template(
         "question.html",
         question=question_data,
-        progress=f"{qid}/{len(questions)}",
+        question_number=question_id,  # 1-based for display
         total_questions=len(questions)
     )
 
@@ -68,30 +70,32 @@ def submit_answer():
     if 'current_question' not in session:
         return redirect(url_for('index'))
     
-    current_q = session['current_question']
-    if current_q >= len(questions):
-        return redirect(url_for('show_result'))
+    current_index = session['current_question']
+    selected_option = request.form.get('selected_option')
     
-    selected_option = request.form.get(str(questions[current_q]['id']))
-    is_correct = selected_option == questions[current_q]['answer']
+    # Verifica risposta
+    is_correct = selected_option == questions[current_index]['answer']
     
+    # Aggiorna punteggio
     if is_correct:
         session['score'] = session.get('score', 0) + 1
     
+    # Salva risposta
     session['answers'] = session.get('answers', [])
     session['answers'].append({
-        'question_id': questions[current_q]['id'],
+        'question_id': questions[current_index]['id'],
         'selected': selected_option,
-        'correct': questions[current_q]['answer'],
+        'correct': questions[current_index]['answer'],
         'is_correct': is_correct,
-        'explanation': questions[current_q].get('explanation', '')
+        'explanation': questions[current_index].get('explanation', '')
     })
     
-    next_q = current_q + 1
-    if next_q < len(questions):
-        return redirect(url_for('show_question', qid=next_q + 1))
-    else:
+    # Determina prossima azione
+    if current_index >= len(questions) - 1:  # Ultima domanda
         return redirect(url_for('show_result'))
+    else:
+        next_question_id = current_index + 2  # 1-based ID
+        return redirect(url_for('show_question', question_id=next_question_id))
 
 @app.route("/result")
 def show_result():
