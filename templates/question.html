@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <title>Question {{ question.id }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -9,12 +10,13 @@
     <p>{{ question.question }}</p>
     <form action="/submit" method="post">
         {% for option in question.options %}
-        <label>
-            <input type="radio" name="{{ question.id }}" value="{{ option }}" required> {{ option }}
+        <label for="{{ question.id }}_{{ loop.index }}">
+            <input type="radio" id="{{ question.id }}_{{ loop.index }}"
+                   name="{{ question.id }}" value="{{ option }}" required>
+            {{ option }}
         </label><br>
         {% endfor %}
         <button type="submit">Next</button>
     </form>
 </body>
 </html>
-
