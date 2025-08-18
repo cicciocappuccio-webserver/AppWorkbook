@@ -1,11 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Quiz Results</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results | US Citizenship</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Stili specifici per la pagina dei risultati */
+        .result-container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .result-header {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        .score-display {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .score-text {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin-bottom: 1rem;
+        }
+        
+        .restart-btn {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            padding: 1rem 2rem;
+            margin-top: 2rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .restart-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .details-btn {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            margin-top: 1.5rem;
+            background-color: #6c757d;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        @media (max-width: 600px) {
+            .result-container {
+                padding: 1rem;
+            }
+            
+            .score-display {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Quiz Complete!</h1>
-    <p>Your score: {{ score }}/{{ total }}</p>
-    <button onclick="location.href='/'">Restart Quiz</button>
+    <div class="container">
+        <div class="result-container">
+            <h1 class="result-header">
+                <i class="fas fa-poll"></i> Quiz Completed!
+            </h1>
+            
+            <div class="score-display">
+                <p class="score-text">Your final score:</p>
+                <div class="final-score">
+                    {{ score }}/{{ total }}
+                </div>
+                <p class="percentage">
+                    ({{ "%.0f"|format((score/total)*100) }}%)
+                </p>
+            </div>
+            
+            <button class="restart-btn" onclick="location.href='/'">
+                <i class="fas fa-redo"></i> Restart Quiz
+            </button>
+            
+            <br>
+            
+            <a href="#details" class="details-btn">
+                <i class="fas fa-info-circle"></i> View Detailed Results
+            </a>
+        </div>
+        
+        <!-- Sezione dettagli risultati -->
+        <div id="details" class="details-section" style="margin-top: 3rem; padding: 2rem; background: #f8f9fa; border-radius: 12px;">
+            <h2 style="font-size: clamp(1.8rem, 4vw, 2.5rem); margin-bottom: 1.5rem;">
+                <i class="fas fa-list-ul"></i> Question Details
+            </h2>
+            
+            {% for answer in session.get('answers', []) %}
+            <div class="question-detail" style="margin-bottom: 2rem; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h3 style="font-size: clamp(1.3rem, 3vw, 1.8rem); color: #2c3e50;">
+                    Question {{ loop.index }}: {{ questions[loop.index0].question }}
+                </h3>
+                
+                <p style="font-size: clamp(1.1rem, 2.5vw, 1.4rem); margin: 1rem 0;">
+                    <strong>Your answer:</strong> 
+                    <span style="color: {% if answer.is_correct %}green{% else %}red{% endif %};">
+                        {{ answer.selected }}
+                        {% if answer.is_correct %}
+                            <i class="fas fa-check"></i>
+                        {% else %}
+                            <i class="fas fa-times"></i>
+                        {% endif %}
+                    </span>
+                </p>
+                
+                {% if not answer.is_correct %}
+                <p style="font-size: clamp(1.1rem, 2.5vw, 1.4rem);">
+                    <strong>Correct answer:</strong> {{ answer.correct }}
+                </p>
+                {% endif %}
+                
+                <p style="font-size: clamp(1rem, 2.2vw, 1.3rem); font-style: italic; margin-top: 1rem;">
+                    {{ answer.explanation }}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </body>
 </html>
