@@ -1,14 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Workbook Quiz</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US Citizenship Workbook Quiz</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <h1>Welcome to the US Citizenship Workbook</h1>
-    <ul>
-        <li><a href="/question">Start Quiz</a></li>
-    </ul>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-flag-usa"></i> US Citizenship Workbook Quiz</h1>
+            <p>Test your knowledge with these practice questions</p>
+        </header>
+        
+        <div class="quiz-info">
+            <div class="info-card">
+                <i class="fas fa-question-circle"></i>
+                <h3>{{ questions|length }} Questions</h3>
+                <p>Covering key topics about US history and government</p>
+            </div>
+            
+            <div class="info-card">
+                <i class="fas fa-award"></i>
+                <h3>Instant Feedback</h3>
+                <p>Get detailed explanations for each answer</p>
+            </div>
+        </div>
+        
+        <a href="{{ url_for('show_question', question_id=1) }}" class="start-button">
+            <i class="fas fa-play"></i> Start Quiz
+        </a>
+    </div>
 </body>
 </html>
