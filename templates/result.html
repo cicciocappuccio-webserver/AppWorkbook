@@ -7,7 +7,13 @@
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Stili specifici per la pagina dei risultati */
+        :root {
+            --correct-color: #28a745;
+            --wrong-color: #dc3545;
+            --primary-color: #007bff;
+            --light-bg: #f8f9fa;
+        }
+        
         .result-container {
             text-align: center;
             padding: 2rem;
@@ -25,54 +31,44 @@
             font-size: clamp(2rem, 5vw, 3.5rem);
             margin: 2rem 0;
             padding: 1.5rem;
-            background-color: #f8f9fa;
+            background-color: var(--light-bg);
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
-        .score-text {
-            font-size: clamp(1.5rem, 4vw, 2rem);
-            margin-bottom: 1rem;
+        .details-section {
+            display: none;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--light-bg);
+            border-radius: 12px;
+            animation: fadeIn 0.5s ease-out;
         }
         
-        .restart-btn {
-            font-size: clamp(1.2rem, 3vw, 1.8rem);
-            padding: 1rem 2rem;
-            margin-top: 2rem;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
+        .details-section.visible {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .correct-answer {
+            color: var(--correct-color);
+        }
+        
+        .wrong-answer {
+            color: var(--wrong-color);
+        }
+        
+        .details-btn, .restart-btn {
             transition: all 0.3s ease;
-            display: inline-block;
         }
         
-        .restart-btn:hover {
-            background-color: #0056b3;
+        .details-btn:hover, .restart-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .details-btn {
-            font-size: clamp(1rem, 2.5vw, 1.5rem);
-            margin-top: 1.5rem;
-            background-color: #6c757d;
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 6px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        @media (max-width: 600px) {
-            .result-container {
-                padding: 1rem;
-            }
-            
-            .score-display {
-                padding: 1rem;
-            }
         }
     </style>
 </head>
@@ -99,18 +95,17 @@
             
             <br>
             
-            <a href="#details" class="details-btn">
+            <button id="toggleDetails" class="details-btn">
                 <i class="fas fa-info-circle"></i> View Detailed Results
-            </a>
+            </button>
         </div>
         
-        <!-- Sezione dettagli risultati -->
-        <div id="details" class="details-section" style="margin-top: 3rem; padding: 2rem; background: #f8f9fa; border-radius: 12px;">
+        <div id="detailsSection" class="details-section">
             <h2 style="font-size: clamp(1.8rem, 4vw, 2.5rem); margin-bottom: 1.5rem;">
                 <i class="fas fa-list-ul"></i> Question Details
             </h2>
             
-            {% for answer in session.get('answers', []) %}
+            {% for answer in answers %}
             <div class="question-detail" style="margin-bottom: 2rem; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 <h3 style="font-size: clamp(1.3rem, 3vw, 1.8rem); color: #2c3e50;">
                     Question {{ loop.index }}: {{ questions[loop.index0].question }}
@@ -118,28 +113,55 @@
                 
                 <p style="font-size: clamp(1.1rem, 2.5vw, 1.4rem); margin: 1rem 0;">
                     <strong>Your answer:</strong> 
-                    <span style="color: {% if answer.is_correct %}green{% else %}red{% endif %};">
+                    <span class="{% if answer.is_correct %}correct-answer{% else %}wrong-answer{% endif %}">
                         {{ answer.selected }}
                         {% if answer.is_correct %}
-                            <i class="fas fa-check"></i>
+                            <i class="fas fa-check"></i> (Correct)
                         {% else %}
-                            <i class="fas fa-times"></i>
+                            <i class="fas fa-times"></i> (Wrong)
                         {% endif %}
                     </span>
                 </p>
                 
                 {% if not answer.is_correct %}
                 <p style="font-size: clamp(1.1rem, 2.5vw, 1.4rem);">
-                    <strong>Correct answer:</strong> {{ answer.correct }}
+                    <strong>Correct answer:</strong> 
+                    <span class="correct-answer">{{ answer.correct }}</span>
                 </p>
                 {% endif %}
                 
                 <p style="font-size: clamp(1rem, 2.2vw, 1.3rem); font-style: italic; margin-top: 1rem;">
-                    {{ answer.explanation }}
+                    <i class="fas fa-lightbulb"></i> <strong>Explanation:</strong> {{ answer.explanation }}
                 </p>
             </div>
             {% endfor %}
         </div>
     </div>
+
+    <script>
+        document.getElementById('toggleDetails').addEventListener('click', function() {
+            const detailsSection = document.getElementById('detailsSection');
+            detailsSection.classList.toggle('visible');
+            
+            if (detailsSection.classList.contains('visible')) {
+                this.innerHTML = '<i class="fas fa-times"></i> Hide Details';
+                detailsSection.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                this.innerHTML = '<i class="fas fa-info-circle"></i> View Detailed Results';
+            }
+        });
+        
+        // Mostra automaticamente se ci sono errori
+        document.addEventListener('DOMContentLoaded', function() {
+            const score = {{ score }};
+            const total = {{ total }};
+            if (score < total) {
+                const detailsSection = document.getElementById('detailsSection');
+                const toggleBtn = document.getElementById('toggleDetails');
+                detailsSection.classList.add('visible');
+                toggleBtn.innerHTML = '<i class="fas fa-times"></i> Hide Details';
+            }
+        });
+    </script>
 </body>
 </html>
