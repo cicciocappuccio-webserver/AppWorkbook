@@ -1,66 +1,102 @@
-/* Generale */
+:root {
+    --primary-color: #007bff;
+    --primary-hover: #0056b3;
+    --background-color: #f9f9f9;
+    --text-color: #333;
+    --card-bg: #ffffff;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+    --correct-color: #28a745;
+    --wrong-color: #dc3545;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     margin: 0;
-    padding: 0;
-    text-align: center;
-    background-color: #f9f9f9;
-    color: #333;
-    font-size: clamp(1rem, 1vw + 0.75rem, 1.25rem);
-    line-height: 1.5;
+    padding: 20px;
+    min-height: 100vh;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Titoli e Paragrafi */
-h1 {
-    font-size: clamp(2rem, 5vw + 1rem, 4rem);
-    margin: 20px 0;
-}
-
-h2 {
-    font-size: clamp(1.5rem, 3vw + 1rem, 2.5rem);
-    margin: 20px 0;
-}
-
-p {
-    font-size: clamp(1rem, 1vw + 0.75rem, 1.25rem);
-    margin: 10px 0;
-}
-
-/* Contenitore Generale */
-form {
+.container {
+    width: 100%;
+    max-width: 800px;
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
     margin: 20px auto;
-    max-width: 90%; /* Ridimensionabile per dispositivi mobili */
 }
 
-/* Centrare i pulsanti radio e il testo */
-form label {
-    display: flex; /* Layout in riga */
-    align-items: center; /* Allinea verticalmente radio e testo */
-    justify-content: flex-start; /* Allinea a sinistra per leggibilità */
-    margin-bottom: 15px; /* Spazio tra le opzioni */
-    font-size: clamp(1rem, 1vw + 0.75rem, 1.25rem);
-}
-
-/* Personalizzazione dei Radio Button */
-input[type="radio"] {
-    margin-right: 10px; /* Spazio tra pallino e testo */
-    transform: scale(1.5); /* Ingrandisce il pulsante */
-    cursor: pointer; /* Cambia il cursore al passaggio del mouse */
-}
-
-/* Pulsanti */
-button {
-    font-size: clamp(1rem, 1vw + 0.5rem, 1.5rem);
-    padding: 10px 20px;
-    margin-top: 20px;
-    background-color: #007bff;
+/* Stili per pulsanti */
+button, .btn {
+    background-color: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 5px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: var(--border-radius);
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: var(--transition);
+    font-weight: 500;
+    margin: 0.5rem;
 }
 
-button:hover {
-    background-color: #0056b3;
+button:hover, .btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Stili per le opzioni di risposta */
+.option {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: white;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.option:hover {
+    border-color: var(--primary-color);
+}
+
+input[type="radio"] {
+    margin-right: 1rem;
+    min-width: 1.25rem;
+    min-height: 1.25rem;
+    accent-color: var(--primary-color);
+}
+
+/* Media queries per dispositivi mobili */
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem;
+        margin: 10px;
+    }
+    
+    button, .btn {
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 1rem;
+    }
 }
