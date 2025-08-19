@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory, flash
 import os
 from werkzeug.security import generate_password_hash
 
@@ -12,9 +12,9 @@ app.config.update(
     TEMPLATES_AUTO_RELOAD=True
 )
 
-# Database delle domande
+# Database delle domande (aggiornato con tutte le 100 domande)
 questions = [
-# Section 1: History of the United States (30 Questions)
+    # Section 1: History of the United States (30 Questions)
     {
         "id": 1,
         "question": "What is the supreme law of the land?",
@@ -1040,90 +1040,74 @@ questions = [
         "explanation": "These are fundamental rights for all in the U.S."
     },
     {
-    "id": 94,
-    "question": "What do we show loyalty to when we say the Pledge of Allegiance?",
-    "options": [
-        "The President",
-        "The United States and the flag",
-        "Congress",
-        "The military"
-    ],
-    "answer": "The United States and the flag",
-    "explanation": "The Pledge of Allegiance is a vow of loyalty to the country and its values."
-},
-{
-    "id": 95,
-    "question": "What is one promise you make when you become a United States citizen?",
-    "options": [
-        "To obey the laws of the United States",
-        "To always vote in elections",
-        "To pay taxes on time",
-        "To serve in the military"
-    ],
-    "answer": "To obey the laws of the United States",
-    "explanation": "New citizens promise to uphold and respect U.S. laws as part of their oath of allegiance."
-},
-{
-    "id": 96,
-    "question": "How old do citizens have to be to vote for President?",
-    "options": [
-        "16",
-        "18",
-        "21",
-        "25"
-    ],
-    "answer": "18",
-    "explanation": "Citizens must be at least 18 years old to vote in federal elections."
-},
-{
-    "id": 97,
-    "question": "What are two ways that Americans can participate in their democracy?",
-    "options": [
-        "Voting and running for office",
-        "Paying taxes and serving on a jury",
-        "Joining the military and working",
-        "Obeying the law and driving legally"
-    ],
-    "answer": "Voting and running for office",
-    "explanation": "Participating in elections and serving in public office are two key ways Americans engage in democracy."
-},
-{
-    "id": 98,
-    "question": "When is the last day you can send in federal income tax forms?",
-    "options": [
-        "April 1",
-        "April 15",
-        "May 15",
-        "December 31"
-    ],
-    "answer": "April 15",
-    "explanation": "Federal income tax returns are typically due on April 15 each year."
-},
-{
-    "id": 99,
-    "question": "When must all men register for the Selective Service?",
-    "options": [
-        "At age 16",
-        "At age 18",
-        "Before age 21",
-        "At age 25"
-    ],
-    "answer": "At age 18",
-    "explanation": "Men between the ages of 18 and 25 are required to register with the Selective Service."
-},
-{
-    "id": 100,
-    "question": "What is freedom of religion?",
-    "options": [
-        "You can practice any religion or not practice a religion.",
-        "The government can force you to practice a religion.",
-        "You must attend church every week.",
-        "Religious practice is forbidden."
-    ],
-    "answer": "You can practice any religion or not practice a religion.",
-    "explanation": "Freedom of religion is guaranteed by the First Amendment, allowing individuals to follow or reject any faith."
-}
-    
+        "id": 94,
+        "question": "What do we show loyalty to when we say the Pledge of Allegiance?",
+        "options": [
+            "The President",
+            "The United States and the flag",
+            "Congress",
+            "The military"
+        ],
+        "answer": "The United States and the flag",
+        "explanation": "The Pledge shows loyalty to the country and its flag."
+    },
+    {
+        "id": 95,
+        "question": "What is one promise you make when you become a United States citizen?",
+        "options": [
+            "To obey the laws of the United States",
+            "To always vote in elections",
+            "To pay taxes on time",
+            "To serve in the military"
+        ],
+        "answer": "To obey the laws of the United States",
+        "explanation": "New citizens promise to uphold U.S. laws."
+    },
+    {
+        "id": 96,
+        "question": "How old do citizens have to be to vote for President?",
+        "options": ["16", "18", "21", "25"],
+        "answer": "18",
+        "explanation": "Citizens must be at least 18 years old to vote."
+    },
+    {
+        "id": 97,
+        "question": "What are two ways that Americans can participate in their democracy?",
+        "options": [
+            "Voting and running for office",
+            "Paying taxes and serving on a jury",
+            "Joining the military and working",
+            "Obeying the law and driving legally"
+        ],
+        "answer": "Voting and running for office",
+        "explanation": "These are key ways to participate in democracy."
+    },
+    {
+        "id": 98,
+        "question": "When is the last day you can send in federal income tax forms?",
+        "options": ["April 1", "April 15", "May 15", "December 31"],
+        "answer": "April 15",
+        "explanation": "Federal income taxes are typically due on April 15."
+    },
+    {
+        "id": 99,
+        "question": "When must all men register for the Selective Service?",
+        "options": ["At age 16", "At age 18", "Before age 21", "At age 25"],
+        "answer": "At age 18",
+        "explanation": "Men must register between ages 18-25."
+    },
+    {
+        "id": 100,
+        "question": "What is freedom of religion?",
+        "options": [
+            "You can practice any religion or not practice a religion.",
+            "The government can force you to practice a religion.",
+            "You must attend church every week.",
+            "Religious practice is forbidden."
+        ],
+        "answer": "You can practice any religion or not practice a religion.",
+        "explanation": "Freedom of religion is guaranteed by the First Amendment."
+    }
 ]
 
 @app.route("/")
@@ -1160,9 +1144,15 @@ def submit_answer():
         return redirect(url_for('index'))
     
     current_index = session['current_question']
-    selected_option = request.form.get('selected_option')
     
-    # Verifica risposta
+    # Verifica se è stata selezionata una risposta
+    if 'selected_option' not in request.form:
+        flash("Please select an answer before proceeding", "error")
+        return redirect(url_for('show_question', question_id=current_index + 1))
+    
+    selected_option = request.form['selected_option']
+    
+    # Verifica se la risposta è corretta
     is_correct = selected_option == questions[current_index]['answer']
     
     # Aggiorna punteggio
@@ -1183,7 +1173,8 @@ def submit_answer():
     if current_index >= len(questions) - 1:  # Ultima domanda
         return redirect(url_for('show_result'))
     else:
-        next_question_id = current_index + 2  # 1-based ID
+        session['current_question'] = current_index + 1
+        next_question_id = current_index + 2  # +1 per l'indice, +1 per l'ID 1-based
         return redirect(url_for('show_question', question_id=next_question_id))
 
 @app.route("/result")
